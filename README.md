@@ -10,9 +10,10 @@
 
 ##### Request Body
 > None
-```
+
 
 ##### Response Body
+
 ```json
 {
 "status": "success", 
