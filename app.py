@@ -5,7 +5,8 @@ from PIL import Image
 import os
 from google.cloud import firestore
 from google.cloud import storage
-
+from datetime import datetime
+import random
 
 # Inisialisasi Firestore
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credentials.json"
@@ -29,11 +30,16 @@ def preprocess_image(image, target_size):
     return image
 
 def get_document_data(collection, doc_id):
-    doc_ref = db.collection(collection).document(str(doc_id))
+    doc_ref = db.collection(collection).document(doc_id)
     doc = doc_ref.get()
     if doc.exists:
         return doc.to_dict()
     return {"error": f"Document '{doc_id}' not found"}
+
+def generate_unique_id():
+    date_digit = datetime.now().strftime("%Y%m%d")
+    random_digit = random.randint(100, 999)        
+    return f"{date_digit}-{random_digit}"
 
 @app.route('/', methods=['GET'])
 def index():
@@ -78,41 +84,51 @@ def predict():
         blob = bucket.blob(destination_blob_name)
         blob.upload_from_string(image_content, content_type='image/jpeg')
 
-        # Ambil data dari Firestore
-        document_data = get_document_data('predictions', predicted_class)
-
-        # Simpan hasil prediksi di memori
-        predicted_result = {
-            "predicted_class": predicted_class,
-            "image_url": f"gs://{BUCKET_NAME}/{destination_blob_name}",
-            "document_data": document_data
-        }
-
-
+        doc_id = generate_unique_id()
+        '''
         doc_ref = db.collection("predictions").add({
+            "prediction_id": doc_id,
             "prediction": int(predicted_class),
             "confidence": confidence,
             "message": response_message,
             "timestamp": firestore.SERVER_TIMESTAMP,
             "image_url": f"https://storage.googleapis.com/{BUCKET_NAME}/{destination_blob_name}",
-            "document_data": document_data
         })
+        '''
+        db.collection("predictions").document(doc_id).set({
+            "prediction_id": doc_id,
+            "prediction": int(predicted_class),
+            "confidence": confidence,
+            "message": response_message,
+            "timestamp": firestore.SERVER_TIMESTAMP,
+            "image_url": f"https://storage.googleapis.com/{BUCKET_NAME}/{destination_blob_name}",
+        })
+        # Ambil data dari Firestore
+        #generated_doc_id = doc_ref[1].id
+
+        # Ambil data dokumen dari Firestore
+        document_data = get_document_data("predictions", doc_id)
+
+        # Simpan hasil prediksi di memori
+        predicted_result = {
+            "prediction_id": doc_id,
+            "prediction": int(predicted_class),
+            "confidence": confidence,
+            "message": response_message,
+            "timestamp": firestore.SERVER_TIMESTAMP,
+            "image_url": f"https://storage.googleapis.com/{BUCKET_NAME}/{destination_blob_name}",
+        }
         
+
         # Kirim respons sebagai JSON
         return jsonify({
-            'prediction': int(predicted_class),
-            'confidence': confidence,
-            'message': response_message,
-            "image_url": f"https://storage.googleapis.com/{BUCKET_NAME}/{destination_blob_name}",
-            "document_data": document_data
+            "document_data": document_data,
+            "document_id": doc_id
         })
-    
 
     except Exception as e:
-        # Tangani error
-        print(f"Error: {e}")
         return jsonify({'error': str(e)}), 500
-    
+       
 @app.route('/predictions', methods=['GET'])
 def get_predictions():
     try:
@@ -129,24 +145,6 @@ def get_predictions():
         # Tangani error
         print(f"Error: {e}")
         return jsonify({'error': str(e)}), 500
-
-@app.route('/result/<field>', methods=['GET'])
-def get_field(field):
-    if field in predicted_result:
-        return jsonify({"status": "success", field: predicted_result[field]}), 200
-    elif field in predicted_result.get('document_data', {}):
-        return jsonify({"status": "success", field: predicted_result['document_data'][field]}), 200
-    return jsonify({"status": "fail", "message": f"Field '{field}' not found"}), 404
-'''
-# Endpoint untuk mengambil semua data dari collection 'predictions'
-@app.route('/waste', methods=['GET'])
-def get_all_predictions():
-    try:
-        predictions_ref = db.collection('predictions')
-        all_predictions = [doc.to_dict() for doc in predictions_ref.stream()]  # Mengambil semua data sekaligus
-        return jsonify({"status": "success", "data": all_predictions}), 200
-    except Exception as e:
-        return jsonify({"status": "fail", "message": str(e)}), 500
 
 # Endpoint Get Full Document
 @app.route('/predictions/<doc_id>', methods=['GET'])
@@ -175,7 +173,8 @@ def get_document_field(doc_id, field):
         return jsonify({"status": "fail", "message": f"Field '{field}' not found in document '{doc_id}'"}), 404
     except Exception as e:
         return jsonify({"status": "fail", "message": str(e)}), 500
-'''
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
-    #app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    #app.run(debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
