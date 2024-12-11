@@ -2,10 +2,8 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'asia-southeast2-docker.pkg.dev/wijiwaste/backend-ml/wijiwaste-mlapi', '.']
   env:
-    - 'GOOGLE_APPLICATION_CREDENTIALS=/secrets/credentials.json'
-  secrets:
-    - source: 'secrets/credentials.json'
-      env: 'GOOGLE_APPLICATION_CREDENTIALS'
+    - 'GOOGLE_APPLICATION_CREDENTIALS=projects/1020536480314/secrets/credentials'
+
 
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'asia-southeast2-docker.pkg.dev/wijiwaste/backend-ml/wijiwaste-mlapi']
