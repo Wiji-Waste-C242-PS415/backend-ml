@@ -5,8 +5,23 @@ from PIL import Image
 import os
 from google.cloud import firestore
 from google.cloud import storage
+from google.cloud import secretmanager
 from datetime import datetime
 import random
+
+def access_secret_version(secret_id, version_id="latest"):
+    # Inisialisasi client Secret Manager
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{os.getenv('GOOGLE_CLOUD_PROJECT')}/secrets/{secret_id}/versions/{version_id}"
+
+    # Akses versi secret
+    response = client.access_secret_version(request={"name": name})
+    return response.payload.data.decode("UTF-8")
+
+# Ekstrak credentials.json dari Secret Manager
+credentials_content = access_secret_version("credentials")
+with open("credentials.json", "w") as f:
+    f.write(credentials_content)
 
 # Inisialisasi Firestore
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credentials.json"

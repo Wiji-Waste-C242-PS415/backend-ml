@@ -1,7 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'asia-southeast2-docker.pkg.dev/wijiwaste/backend-ml/wijiwaste-mlapi', '.']
-  secretEnv: ['GOOGLE_APPLICATION_CREDENTIALS']
 
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'asia-southeast2-docker.pkg.dev/wijiwaste/backend-ml/wijiwaste-mlapi']
@@ -12,12 +11,10 @@ steps:
     '--image', 'asia-southeast2-docker.pkg.dev/wijiwaste/backend-ml/wijiwaste-mlapi',
     '--region', 'asia-southeast2',
     '--platform', 'managed',
-    '--allow-unauthenticated'
+    '--allow-unauthenticated',
+    '--update-secrets', 'GOOGLE_APPLICATION_CREDENTIALS=credentials:latest'
   ]
 
-secrets:
-- secretEnv:
-    GOOGLE_APPLICATION_CREDENTIALS: projects/1020536480314/secrets/credentials
 
 options:
   logging: CLOUD_LOGGING_ONLY
