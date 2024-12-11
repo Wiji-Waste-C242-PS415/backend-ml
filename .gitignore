@@ -1,4 +1,3 @@
 models
 credentials.json
-model.py
 cloudbuild.yaml
