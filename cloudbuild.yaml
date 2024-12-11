@@ -17,7 +17,7 @@ steps:
 
 secrets:
 - secretEnv:
-    GOOGLE_APPLICATION_CREDENTIALS: credentials
+    GOOGLE_APPLICATION_CREDENTIALS: projects/1020536480314/secrets/credentials
 
 options:
   logging: CLOUD_LOGGING_ONLY
