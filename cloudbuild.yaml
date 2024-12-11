@@ -9,7 +9,7 @@ steps:
   args: [
     'run', 'deploy', 'my-cloud-run-service',
     '--image', 'asia-southeast2-docker.pkg.dev/wijiwaste/backend-ml/wijiwaste-mlapi',
-    '--region', 'asia-southeast2',
+    '--region', 'us-central1',
     '--platform', 'managed',
     '--allow-unauthenticated',
     '--update-secrets', 'GOOGLE_APPLICATION_CREDENTIALS=credentials:latest'
