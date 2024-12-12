@@ -1,3 +1,10 @@
+# Cloud Architecture
+
+<p align="center">
+  <img src="img/cloudarch.png" alt="cloudarchitecture" />
+</p>
+
+
 # API Endpoints
 
 >Deployed Url: https://wijiwaste-mlapi-1020536480314.us-central1.run.app
