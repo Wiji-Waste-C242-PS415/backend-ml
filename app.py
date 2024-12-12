@@ -13,7 +13,7 @@ import os
 def access_secret_version(secret_id, version_id="latest"):
     # Inisialisasi client Secret Manager
     client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/{os.getenv('GOOGLE_CLOUD_PROJECT')}/secrets/{secret_id}/versions/{version_id}"
+    name = f"projects/1020536480314/secrets/credentials/versions/1"
 
     # Akses versi secret
     response = client.access_secret_version(request={"name": name})
