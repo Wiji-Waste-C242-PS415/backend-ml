@@ -9,7 +9,7 @@ steps:
   args: [
     'run', 'deploy', 'wijiwaste-mlapi',
     '--image', 'asia-southeast2-docker.pkg.dev/wijiwaste/backend-ml/wijiwaste-mlapi',
-    '--region', 'us-central1',
+    '--region', 'asia-southeast2',
     '--platform', 'managed',
     '--allow-unauthenticated'
     ]
