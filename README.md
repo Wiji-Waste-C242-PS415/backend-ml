@@ -7,7 +7,7 @@
 
 # API Endpoints
 
->Deployed Url: https://wijiwaste-mlapi-1020536480314.us-central1.run.app
+>Deployed Url: https://wijiwaste-mlapi-1020536480314.asia-southeast2.run.app
 
 <details>
  <summary><code>GET</code> <code><b>/</b></code> <code>(main endpoint)</code></summary>
