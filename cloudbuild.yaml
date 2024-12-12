@@ -7,13 +7,12 @@ steps:
 
 - name: 'gcr.io/cloud-builders/gcloud'
   args: [
-    'run', 'deploy', 'my-cloud-run-service',
+    'run', 'deploy', 'wijiwaste-mlapi',
     '--image', 'asia-southeast2-docker.pkg.dev/wijiwaste/backend-ml/wijiwaste-mlapi',
     '--region', 'us-central1',
     '--platform', 'managed',
-    '--allow-unauthenticated',
-    '--update-secrets', 'GOOGLE_APPLICATION_CREDENTIALS=credentials:latest'
-  ]
+    '--allow-unauthenticated'
+    ]
 
 
 options:
